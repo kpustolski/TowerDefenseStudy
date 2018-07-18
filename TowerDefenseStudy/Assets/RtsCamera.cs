@@ -79,7 +79,7 @@ public class RtsCamera : MonoBehaviour
                 translation += Vector3.forward * ScrollSpeed * Time.deltaTime;
             }
         }
-
+        //this is a comment
         // Keep camera within level and zoom area
         var desiredPosition = camera.transform.position + translation;
         if (desiredPosition.x < -LevelAreaX || LevelAreaX < desiredPosition.x)
