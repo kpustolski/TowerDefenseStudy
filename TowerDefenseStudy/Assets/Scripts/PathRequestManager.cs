@@ -17,6 +17,9 @@ public class PathRequestManager : MonoBehaviour
 
     bool isProcessingPath;
 
+    //katie code
+    public bool isOn = false;
+
     void Awake()
     {
         instance = this;

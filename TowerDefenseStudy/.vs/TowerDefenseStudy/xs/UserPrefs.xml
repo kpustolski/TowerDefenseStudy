@@ -1,15 +1,18 @@
 ﻿<Properties StartupConfiguration="{09F865BF-089D-3A6B-1EA6-50FB6F0ABB4B}|">
   <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/RtsCamera.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/Node.cs" Line="5" Column="55" />
-      <File FileName="Assets/Scripts/Grid.cs" Line="7" Column="55" />
-      <File FileName="Assets/Scripts/Pathfinding.cs" Line="8" Column="55" />
+      <File FileName="Assets/Scripts/Node.cs" Line="11" Column="34" />
+      <File FileName="Assets/Scripts/Grid.cs" Line="40" Column="12" />
+      <File FileName="Assets/Scripts/Pathfinding.cs" Line="8" Column="4" />
       <File FileName="Assets/Scripts/Heap.cs" Line="6" Column="55" />
-      <File FileName="Assets/Scripts/Unit.cs" Line="42" Column="52" />
-      <File FileName="Assets/Scripts/PathRequestManager.cs" Line="7" Column="55" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="35" Column="1" />
-      <File FileName="Assets/RtsCamera.cs" Line="17" Column="1" />
+      <File FileName="Assets/Scripts/Unit.cs" Line="39" Column="29" />
+      <File FileName="Assets/Scripts/PathRequestManager.cs" Line="28" Column="5" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="26" Column="6" />
+      <File FileName="Assets/RtsCamera.cs" Line="48" Column="9" />
+      <File FileName="Assets/Scripts/Building.cs" Line="13" Column="1" />
+      <File FileName="Assets/Scripts/ShopItem.cs" Line="48" Column="40" />
+      <File FileName="Assets/Scripts/Singleton.cs" Line="24" Column="29" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />

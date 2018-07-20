@@ -62,12 +62,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\RtsCamera.cs" />
+    <Compile Include="Assets\Scripts\Building.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Grid.cs" />
     <Compile Include="Assets\Scripts\Heap.cs" />
     <Compile Include="Assets\Scripts\Node.cs" />
     <Compile Include="Assets\Scripts\Pathfinding.cs" />
     <Compile Include="Assets\Scripts\PathRequestManager.cs" />
+    <Compile Include="Assets\Scripts\ShopItem.cs" />
+    <Compile Include="Assets\Scripts\Singleton.cs" />
     <Compile Include="Assets\Scripts\Unit.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>/Users/katiepustolski/Desktop/GitHub repos/TowerDefenseStudy/TowerDefenseStudy/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>

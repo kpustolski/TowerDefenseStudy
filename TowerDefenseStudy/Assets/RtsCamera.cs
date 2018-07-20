@@ -32,11 +32,11 @@ public class RtsCamera : MonoBehaviour
         var translation = Vector3.zero;
 
         // Zoom in or out
-        var zoomDelta = Input.GetAxis("Mouse ScrollWheel") * ZoomSpeed * Time.deltaTime;
-        if (zoomDelta != 0)
-        {
-            translation -= Vector3.up * ZoomSpeed * zoomDelta;
-        }
+        //var zoomDelta = Input.GetAxis("Mouse ScrollWheel") * ZoomSpeed * Time.deltaTime;
+        //if (zoomDelta != 0)
+        //{
+        //    translation -= Vector3.up * ZoomSpeed * zoomDelta;
+        //}
 
         // Start panning camera if zooming in close to the ground or if just zooming out.
         //var pan = camera.transform.eulerAngles.x - zoomDelta * PanSpeed;

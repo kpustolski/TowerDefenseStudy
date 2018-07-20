@@ -7,21 +7,28 @@ using System.Collections;
 public class Unit : MonoBehaviour
 {
 
-
     public Transform target;
     public float speed = 20;
     Vector3[] path;
     int targetIndex;
+    //katie code
 
-    void Start()
-    {
+    //void Start()
+    //{
+    //    PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+    //}
+
+    public void StartPath(){
         PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+        Debug.Log("Target Pos: " + target.position);
     }
 
-    public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
+	public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
     {
         if (pathSuccessful)
         {
+            Debug.Log("Path Successful");
+
             path = newPath;
             targetIndex = 0;
             StopCoroutine("FollowPath");
