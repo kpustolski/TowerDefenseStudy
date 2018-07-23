@@ -20,6 +20,7 @@ public class Grid : MonoBehaviour
 
     //Katie Code
     //public GameObject Node;
+    public bool _seeGrid = false;
 
     void Awake()
     {
@@ -95,13 +96,16 @@ public class Grid : MonoBehaviour
     //}
     void OnDrawGizmos()
     {
-        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-        if (grid != null && displayGridGizmos)
+        if (_seeGrid)
         {
-            foreach (Node n in grid)
+            Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
+            if (grid != null && displayGridGizmos)
             {
-                Gizmos.color = (n.walkable) ? Color.white : Color.red;
-                Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
+                foreach (Node n in grid)
+                {
+                    Gizmos.color = (n.walkable) ? Color.white : Color.red;
+                    Gizmos.DrawCube(n.worldPosition, Vector3.one * (nodeDiameter - .1f));
+                }
             }
         }
     }

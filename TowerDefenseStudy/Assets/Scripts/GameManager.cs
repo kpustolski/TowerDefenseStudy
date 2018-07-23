@@ -3,16 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public struct Level {
-
-    public string Name;
-    public int iD;
-    public Unit unitType;
+[System.Serializable]
+public struct Level
+{
+    public string levelName;
+    public Unit enemyType;
+    public int spawnNumber;
+    public ShopItem unlockedShopItem;
 }
-public class GameManager : MonoBehaviour {
 
+public class GameManager : Singleton<GameManager> {
+
+    [Header("UI Components")]
     public Text goldText;
 
+    [Header("Attributes")]
     [SerializeField]
     private int _totalGold = 5;
     public int TotalGold{
@@ -24,12 +29,19 @@ public class GameManager : MonoBehaviour {
             goldText.text = "Gold: " + TotalGold.ToString();
         }
     }
+    // Enemy spawn
+    public Transform enemySpawnLocation;
+
+    [Header("Lists")]
     public ShopItem[] shopItemsArray;
     public Level[] levelList;
+    //temp
+    public Enemy[] enemyArray;
 
     // Selecting shop item
     private GameObject currentShopItemPrefab;
     private ShopItem _currentShopItemScript;
+    private Building _currentBuildingScript;
     private bool _isItemPreviewActive = false;
 
     //Grid Script
@@ -41,15 +53,14 @@ public class GameManager : MonoBehaviour {
     private float _customDistance = 50f;
     private bool _useInitCamDistance = false;
 
-    //temp
-    public Unit[] units;
-
 	// Use this for initialization
 	void Start () {
         //assign an ID to the shop items
         for (int i = 0; i < shopItemsArray.Length; i++){
             shopItemsArray[i].ID = i;
+            //Debug.Log("i: " + i);
             CheckShopPrices(shopItemsArray[i]);
+
         }
         _gridScript = GetComponent<Grid>();
         goldText.text = "Gold: " + TotalGold.ToString();
@@ -73,6 +84,7 @@ public class GameManager : MonoBehaviour {
             if (Input.GetMouseButtonDown(0))
             {
                 _isItemPreviewActive = false;
+                _currentBuildingScript.SetUp();
                 DecreaseGold(_currentShopItemScript.itemCost);
                 CheckShopPrices();
                 //currentShopItemPrefab = null;
@@ -85,8 +97,8 @@ public class GameManager : MonoBehaviour {
 
     public void StartMarching(){
         _gridScript.CreateGrid();
-        for (int i = 0; i < units.Length; i++){
-            units[i].StartPath();
+        for (int i = 0; i < enemyArray.Length; i++){
+            enemyArray[i].StartPath();
         }
     }
 
@@ -102,8 +114,10 @@ public class GameManager : MonoBehaviour {
     {
 
         GameObject obj = Instantiate(item.itemPrefab) as GameObject;
+
         currentShopItemPrefab = obj;
         _currentShopItemScript = item;
+        _currentBuildingScript = obj.GetComponent<Building>();
 
         if (_useInitCamDistance)
         {
@@ -120,6 +134,8 @@ public class GameManager : MonoBehaviour {
     private void CheckShopPrices(ShopItem item){
         if(item.isUnlocked){
             if(item.itemCost <= TotalGold){
+                //Debug.Log("item.name: " + item.name);
+
                 item.Activate();
             }
             else{

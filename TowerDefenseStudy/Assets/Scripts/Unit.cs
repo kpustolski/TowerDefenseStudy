@@ -12,22 +12,32 @@ public class Unit : MonoBehaviour
     Vector3[] path;
     int targetIndex;
     //katie code
+    public int health = 5;
+    public int goldGained = 5;
 
-    //void Start()
-    //{
-    //    PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
-    //}
+    public bool _isGizmosOn = false;
+	//void Start()
+	//{
+	//    PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
+	//}
 
-    public void StartPath(){
+	private void Update()
+	{
+        if(health <= 0 ){
+            GameManager.Instance.IncreaseGold(goldGained);
+            Destroy(gameObject);
+        }
+	}
+	public void StartPath(){
         PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
-        Debug.Log("Target Pos: " + target.position);
+        //Debug.Log("Target Pos: " + target.position);
     }
 
 	public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
     {
         if (pathSuccessful)
         {
-            Debug.Log("Path Successful");
+            //Debug.Log("Path Successful");
 
             path = newPath;
             targetIndex = 0;
@@ -61,20 +71,23 @@ public class Unit : MonoBehaviour
 
     public void OnDrawGizmos()
     {
-        if (path != null)
+        if (_isGizmosOn)
         {
-            for (int i = targetIndex; i < path.Length; i++)
+            if (path != null)
             {
-                Gizmos.color = Color.black;
-                Gizmos.DrawCube(path[i], Vector3.one);
+                for (int i = targetIndex; i < path.Length; i++)
+                {
+                    Gizmos.color = Color.black;
+                    Gizmos.DrawCube(path[i], Vector3.one);
 
-                if (i == targetIndex)
-                {
-                    Gizmos.DrawLine(transform.position, path[i]);
-                }
-                else
-                {
-                    Gizmos.DrawLine(path[i - 1], path[i]);
+                    if (i == targetIndex)
+                    {
+                        Gizmos.DrawLine(transform.position, path[i]);
+                    }
+                    else
+                    {
+                        Gizmos.DrawLine(path[i - 1], path[i]);
+                    }
                 }
             }
         }

@@ -8,8 +8,9 @@ public class ShopItem : MonoBehaviour {
     [Header("UI Objects")]
     public Text objNameText;
     public Text objCostText;
-    private Image _objImage;
-    private Button _objButton;
+    public Button objButton;
+    public Image objImage;
+
 
     [Header("Item Details")]
     public string itemName;
@@ -33,26 +34,29 @@ public class ShopItem : MonoBehaviour {
 
 	private void Start()
 	{
-        _objImage = GetComponent<Image>();
-        _objButton = GetComponent<Button>();
+        //_objImage = GetComponent<Image>();
+        //_objButton = GetComponent<Button>();
 
         objNameText.text = itemName;
         objCostText.text = itemCost.ToString();
         if(itemSprite != null){
-            _objImage.sprite = itemSprite;
+            objImage.sprite = itemSprite;
 
         }
 	}
 
     public void Activate(){
-        _objButton.interactable = true;
+        if(objImage == null){
+            Debug.Log("null button");
+        }
+        objButton.interactable = true;
     }
     public void Deactivate(){
-        _objButton.interactable = false;
+        objButton.interactable = false;
     }
 
     public void Unlock(){
-        _objImage.color = unLockedColor;
-        _objButton.interactable = true;
+        objImage.color = unLockedColor;
+        objButton.interactable = true;
     }
 }
