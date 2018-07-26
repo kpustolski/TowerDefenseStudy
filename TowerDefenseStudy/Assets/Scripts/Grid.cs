@@ -9,7 +9,7 @@ using System.Collections.Generic;
 public class Grid : MonoBehaviour
 {
 
-    public bool displayGridGizmos;
+    //public bool displayGridGizmos;
     public LayerMask unwalkableMask;
     public Vector2 gridWorldSize;
     public float nodeRadius;
@@ -99,7 +99,7 @@ public class Grid : MonoBehaviour
         if (_seeGrid)
         {
             Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-            if (grid != null && displayGridGizmos)
+            if (grid != null)
             {
                 foreach (Node n in grid)
                 {

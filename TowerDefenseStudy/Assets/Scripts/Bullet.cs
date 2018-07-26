@@ -6,13 +6,14 @@ public class Bullet : MonoBehaviour {
 
     public float moveSpeed = 20f;
     public int damage = 1;
-
+    //public float rangeRadius = 1f;
     private float _bulletMove;
     private Rigidbody _rb;
     private bool _isActive = true;
     private Transform _enemyPos;
     private GameObject[] _enemyArray;
     private int _randomEnemy;
+
 	// Use this for initialization
 	void Start () {
         //chose a random enemy to shoot at
@@ -49,7 +50,7 @@ public class Bullet : MonoBehaviour {
             _isActive = false;
             Destroy(gameObject);
         }
-        if(other.tag == "Wall"){
+        if(other.tag == "Wall" || other.tag == "Floor"){
             //Debug.Log("Hit wall");
             _isActive = false;
             Destroy(gameObject);

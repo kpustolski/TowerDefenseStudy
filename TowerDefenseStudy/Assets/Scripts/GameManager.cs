@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public struct Level
@@ -53,6 +54,10 @@ public class GameManager : Singleton<GameManager> {
     private float _customDistance = 50f;
     private bool _useInitCamDistance = false;
 
+    //temp
+    private RtsCamera _camScript;
+    private bool _isCamScriptOn;
+
 	// Use this for initialization
 	void Start () {
         //assign an ID to the shop items
@@ -64,6 +69,7 @@ public class GameManager : Singleton<GameManager> {
         }
         _gridScript = GetComponent<Grid>();
         goldText.text = "Gold: " + TotalGold.ToString();
+        _camScript = Camera.main.GetComponent<RtsCamera>();
 	}
 	
 	// Update is called once per frame
@@ -81,7 +87,7 @@ public class GameManager : Singleton<GameManager> {
             _mousePos = Input.mousePosition;
             _mousePos.z = _actualDistance;
             currentShopItemPrefab.transform.position = Camera.main.ScreenToWorldPoint(_mousePos);
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && _currentBuildingScript.isPlaceable)
             {
                 _isItemPreviewActive = false;
                 _currentBuildingScript.SetUp();
@@ -91,6 +97,21 @@ public class GameManager : Singleton<GameManager> {
                 //_currentShopItemScript = null;
                 _actualDistance = 0f;
 
+            }
+        }
+
+        if(Input.GetKeyDown(KeyCode.R)){
+            ResetScene();
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            if(_isCamScriptOn){
+                _camScript.enabled = false;
+                _isCamScriptOn = false;
+            }
+            else{
+                _camScript.enabled = true;
+                _isCamScriptOn = true;
             }
         }
 	}
@@ -131,7 +152,12 @@ public class GameManager : Singleton<GameManager> {
 
     }
 
-    private void CheckShopPrices(ShopItem item){
+    // Attached to reset button "R"
+    private void ResetScene(){
+        SceneManager.LoadScene(0);
+    }
+
+	private void CheckShopPrices(ShopItem item){
         if(item.isUnlocked){
             if(item.itemCost <= TotalGold){
                 //Debug.Log("item.name: " + item.name);
@@ -161,5 +187,4 @@ public class GameManager : Singleton<GameManager> {
             }
         }
     }
-
 }

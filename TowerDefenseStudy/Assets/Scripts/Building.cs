@@ -15,6 +15,13 @@ public class Building : MonoBehaviour{
     // want gizmos on?
     [SerializeField]
     private bool isGizmosOn = false;
+    public Color32 placeableColor = new Color32(0, 255, 0, 200);
+    public Color32 notPlaceableColor = new Color32(255, 0, 0, 200);
+    public Color32 defaultColor = new Color32(255, 255, 255, 255);
+    public bool isPlaceable = false;
+
+    private Renderer _renderer;
+
 
     [Header("Shooting Bullets")]
     public float fireRate = 1f;
@@ -26,6 +33,7 @@ public class Building : MonoBehaviour{
     private float _fireCountdown = 0f;
 
     private Collider[] enemiesInRange;
+    private Bullet _bulletScript;
     private Vector3 _center;
     public Vector3 Center
     {
@@ -42,6 +50,7 @@ public class Building : MonoBehaviour{
 	private void Start()
 	{
         layerMask = 1 << enemyLayer;
+        _renderer = GetComponent<Renderer>();
 	}
 	private void Update()
 	{
@@ -56,15 +65,24 @@ public class Building : MonoBehaviour{
                     ShootBullet();
                     _fireCountdown = 1f / fireRate;
                 }
-
                 _fireCountdown -= Time.deltaTime;
             }
-        }
-	}
 
-    public void SetUp(){
+            if (health <= 0)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+	}
+	public void OnDestroy()
+	{
+        GameManager.Instance.StartMarching();
+	}
+	public void SetUp(){
         _isPlaced = true;
         Center = transform.position;
+        _renderer.material.color = defaultColor;
     }
     void OnDrawGizmos()
     {
@@ -80,6 +98,31 @@ public class Building : MonoBehaviour{
         
         //Debug.Log("Shoot");
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation) as GameObject;
+        _bulletScript = bullet.GetComponent<Bullet>();
+        //_bulletScript.rangeRadius = rangeRadius;
         _fireCountdown = Time.deltaTime + fireRate;
     }
+
+    private void OnTriggerEnter(Collider col)
+	{
+        Debug.Log("col.tag: " + col.tag);
+
+        if (!_isPlaced)
+        {
+            if (col.tag == "Wall" || col.tag == "Building")
+            {
+                _renderer.material.color = notPlaceableColor;
+                isPlaceable = false;
+            }
+        }
+	}
+	private void OnTriggerExit(Collider col)
+	{
+        if (!_isPlaced)
+        {
+            _renderer.material.color = placeableColor;
+            isPlaceable = true;
+        }
+	}
+
 }
