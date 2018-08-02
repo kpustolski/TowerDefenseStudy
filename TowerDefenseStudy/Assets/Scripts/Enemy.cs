@@ -73,7 +73,7 @@ public class Enemy : MonoBehaviour {
             _enemyMove = speed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, pausePosition, _enemyMove);
 
-            if (buildingsInRange.Length >= 1 && _randomBuilding != null)
+            if (buildingsInRange.Length >= 1 && _randomBuilding != null && transform.position == pausePosition)
             {
                 if (_fireCountdown <= 0f)
                 {
@@ -117,6 +117,8 @@ public class Enemy : MonoBehaviour {
                 if (targetIndex >= path.Length)
                 {
                     // Code where unit ends journey
+                    GameManager.Instance.EnemyReachedBoat();
+                    Destroy(gameObject);
                     yield break;
                 }
                 currentWaypoint = path[targetIndex];

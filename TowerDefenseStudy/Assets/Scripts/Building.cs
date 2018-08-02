@@ -77,7 +77,10 @@ public class Building : MonoBehaviour{
 	}
 	public void OnDestroy()
 	{
-        GameManager.Instance.StartMarching();
+        if (GameManager.Instance.activeEnemyList.Count > 0)
+        {
+            GameManager.Instance.StartMarching();
+        }
 	}
 	public void SetUp(){
         _isPlaced = true;

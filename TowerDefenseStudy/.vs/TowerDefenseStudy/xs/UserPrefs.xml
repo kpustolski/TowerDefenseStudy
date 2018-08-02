@@ -1,18 +1,18 @@
 ﻿<Properties StartupConfiguration="{09F865BF-089D-3A6B-1EA6-50FB6F0ABB4B}|">
   <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="Unity.Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/EnemyBullet.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
     <Files>
       <File FileName="Assets/Scripts/Unit.cs" Line="3" Column="1" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="153" Column="6" />
-      <File FileName="Assets/Scripts/Building.cs" Line="73" Column="54" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="292" Column="6" />
+      <File FileName="Assets/Scripts/Building.cs" Line="88" Column="37" />
       <File FileName="Assets/Scripts/ShopItem.cs" Line="23" Column="22" />
       <File FileName="Assets/Scripts/Singleton.cs" Line="15" Column="5" />
       <File FileName="Assets/Scripts/Grid.cs" Line="102" Column="29" />
-      <File FileName="Assets/Scripts/Enemy.cs" Line="53" Column="33" />
+      <File FileName="Assets/Scripts/Enemy.cs" Line="87" Column="17" />
       <File FileName="Assets/Scripts/RtsCamera.cs" Line="3" Column="5" />
       <File FileName="Assets/Scripts/PathRequestManager.cs" Line="42" Column="35" />
       <File FileName="Assets/Scripts/Pathfinding.cs" Line="80" Column="58" />
-      <File FileName="Assets/Scripts/EnemyBullet.cs" Line="29" Column="4" />
+      <File FileName="Assets/Scripts/EnemyBullet.cs" Line="58" Column="36" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
