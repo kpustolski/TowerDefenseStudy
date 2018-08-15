@@ -143,8 +143,9 @@ MonoBehaviour:
   goldGained: 5
   _isGizmosOn: 1
   fireRate: 4
-  bulletPrefab: {fileID: 1638835786842076, guid: 567b12621c64a4756a87523411cb120a,
-    type: 2}
+  bulletColor:
+    serializedVersion: 2
+    rgba: 4278251775
   firePoint: {fileID: 4016787753245020}
   rangeRadius: 8
   distanceFromTower: 5

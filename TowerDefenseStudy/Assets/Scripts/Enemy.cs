@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class Enemy : MonoBehaviour {
 
-    [Header("Attributes")]
+    [Header("--Attributes--")][Space(5)]
     public Transform target;
     public float speed = 20;
     private float _enemyMove;
@@ -18,15 +18,16 @@ public class Enemy : MonoBehaviour {
     public int goldGained = 5;
     public bool _isGizmosOn = false;
 
-    [Header("Shooting Bullets")]
+    [Header("--Shooting Bullets--")][Space(5)]
     public float fireRate = 1f;
-    public GameObject bulletPrefab;
+    public Color32 bulletColor = new Color32(255, 255, 255, 255);
     // point at where you want to fire bullet
     public Transform firePoint;
     public float rangeRadius = 5f;
     public float distanceFromTower = 5f;
-    //public int enemyLayer = 10;
-    //private int layerMask;
+    private ObjectPoolScript _enemyPoolScript;
+    private Renderer _bulletRenderer;
+
     private float _fireCountdown = 0f;
     private Collider[] buildingsInRange;
     private EnemyBullet _bulletScript;
@@ -44,6 +45,8 @@ public class Enemy : MonoBehaviour {
     {
         //PathRequestManager.RequestPath(transform.position, target.position, OnPathFound);
         //_center = transform.position;
+        _enemyPoolScript = GameManager.Instance.enemyBulletPool;
+
     }
 
     private void Update()
@@ -52,7 +55,8 @@ public class Enemy : MonoBehaviour {
         if (health <= 0)
         {
             GameManager.Instance.IncreaseGold(goldGained);
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            gameObject.SetActive(false);
         }
         if (_isAttackingBuilding)
         {
@@ -118,7 +122,8 @@ public class Enemy : MonoBehaviour {
                 {
                     // Code where unit ends journey
                     GameManager.Instance.EnemyReachedBoat();
-                    Destroy(gameObject);
+                    //Destroy(gameObject);
+                    gameObject.SetActive(false);
                     yield break;
                 }
                 currentWaypoint = path[targetIndex];
@@ -133,13 +138,29 @@ public class Enemy : MonoBehaviour {
 
     private void ShootBullet()
     {
+        // grab a bullet from the object pool
+        GameObject bul = _enemyPoolScript.GetPooledObject();
 
-        //Debug.Log("Shoot");
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation) as GameObject;
-        _bulletScript = bullet.GetComponent<EnemyBullet>();
+        if (bul == null) return;
+        // Set position
+        _bulletScript = bul.GetComponent<EnemyBullet>();
         _bulletScript.SetUpBullet(_attackBuildingScript);
         //_bulletScript.rangeRadius = rangeRadius;
+        //bul.transform.position = firePoint.position;
+        //bul.transform.rotation = firePoint.rotation;
+        // set color
+        _bulletRenderer = bul.GetComponent<Renderer>();
+        _bulletRenderer.material.color = bulletColor;
+        bul.SetActive(true);
+        // FIRE AWAY!
         _fireCountdown = Time.deltaTime + fireRate;
+
+        //Debug.Log("Shoot");
+        //GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation) as GameObject;
+        //_bulletScript = bullet.GetComponent<EnemyBullet>();
+        //_bulletScript.SetUpBullet(_attackBuildingScript);
+        ////_bulletScript.rangeRadius = rangeRadius;
+        //_fireCountdown = Time.deltaTime + fireRate;
     }
 
     public void OnDrawGizmos()

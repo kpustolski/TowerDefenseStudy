@@ -13,20 +13,23 @@ public class EnemyBullet : MonoBehaviour
     private bool _isActive = true;
     private Transform _buildingPos;
 
-    // Use this for initialization
-    //void Start()
-    //{
-        //chose a random enemy to shoot at
-        //_enemyArray = GameObject.FindGameObjectsWithTag("Enemy");
-        //if (_enemyArray.Length != 0)
-        //{
-        //    _randomEnemy = Random.Range(0, _enemyArray.Length);
-        //    _enemyPos = _enemyArray[_randomEnemy].transform;
-        //}
-    //}
-
-    //// Update is called once per frame
-    private void Update()
+	// Use this for initialization
+	//void Start()
+	//{
+	//chose a random enemy to shoot at
+	//_enemyArray = GameObject.FindGameObjectsWithTag("Enemy");
+	//if (_enemyArray.Length != 0)
+	//{
+	//    _randomEnemy = Random.Range(0, _enemyArray.Length);
+	//    _enemyPos = _enemyArray[_randomEnemy].transform;
+	//}
+	//}
+	private void OnEnable()
+	{
+        _isActive = true;
+	}
+	//// Update is called once per frame
+	private void Update()
     {
         if (_isActive)
         {
@@ -37,11 +40,12 @@ public class EnemyBullet : MonoBehaviour
             }
             else
             {
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
 
         }
     }
+
     public void SetUpBullet(Building b){
         _buildingPos = b.transform;
     }
@@ -53,14 +57,8 @@ public class EnemyBullet : MonoBehaviour
             Building building = other.GetComponent<Building>();
             building.health -= damage;
             _isActive = false;
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
-        //if (other.tag == "Wall" || other.tag == "Floor")
-        //{
-        //    //Debug.Log("Hit wall");
-        //    _isActive = false;
-        //    Destroy(gameObject);
-        //}
     }
 
 }

@@ -20,7 +20,7 @@ public class GameManager : Singleton<GameManager> {
     public enum GameState {BuildState,AttackState}
     private GameState _gameState;
 
-    [Header("UI Components")][Space(5)]
+    [Header("--UI Components--")][Space(5)]
     public Text goldText;
     public Text timerText;
     public Text livesLeftText;
@@ -28,7 +28,7 @@ public class GameManager : Singleton<GameManager> {
     public Text levelText;
 
 
-    [Header("Attributes")][Space(5)]
+    [Header("--Attributes--")][Space(5)]
     [SerializeField]
     private int _livesLeft = 10;
     public int LivesLeft
@@ -60,14 +60,24 @@ public class GameManager : Singleton<GameManager> {
     public Transform enemySpawnLocation;
     public Transform enemyEndPosition;
 
-    [Header("Lists")][Space(5)]
+    [Header("--Lists--")][Space(5)]
     public ShopItem[] shopItemsArray;
     public Level[] levelList;
-    public List<Enemy> activeEnemyList = new List<Enemy>();
+    public List<Enemy> activeEnemyList;
 
-    [Header("Timer")][Space(5)]
+    [Header("--Timer--")][Space(5)]
     public float initWaitTime = 10f;
     private float _waitTime;
+
+    [Header("--Object Pooling Scripts--")]
+    [Space(5)]
+    public ObjectPoolScript buildingBulletPool;
+    public ObjectPoolScript enemyBulletPool;
+
+    [Header("--Parent Transforms--")]
+    [Space(5)]
+    public Transform buildingParent;
+    public Transform enemyParent;
 
     // Selecting shop items
     private GameObject currentShopItemPrefab;
@@ -83,6 +93,7 @@ public class GameManager : Singleton<GameManager> {
     private float _actualDistance;
     private float _customDistance = 50f;
     private bool _useInitCamDistance = false;
+    private List<GameObject> _inActiveBuildingPreviewObjs;
 
     //temp
     private RtsCamera _camScript;
@@ -93,8 +104,16 @@ public class GameManager : Singleton<GameManager> {
     private Level _currentLvlScript;
     private int _numOfActiveEnemies = 0;
 
+    //Building
+    private List<GameObject> _placedBuildingList;
+
 	// Use this for initialization
 	void Start () {
+        
+        activeEnemyList = new List<Enemy>();
+        _placedBuildingList = new List<GameObject>();
+        _inActiveBuildingPreviewObjs = new List<GameObject>();
+
         //assign an ID to the shop items and check prices.
         for (int i = 0; i < shopItemsArray.Length; i++){
             shopItemsArray[i].ID = i;
@@ -111,6 +130,7 @@ public class GameManager : Singleton<GameManager> {
         gameStateText.text = "Build State";
         levelText.text = "Level: " + (1+_currentLevel).ToString();
         LoadLevel(_currentLevel);
+
 
 	}
 	
@@ -131,14 +151,16 @@ public class GameManager : Singleton<GameManager> {
             currentShopItemPrefab.transform.position = Camera.main.ScreenToWorldPoint(_mousePos);
             if (Input.GetMouseButtonDown(0) && _currentBuildingScript.isPlaceable)
             {
+                
                 _isItemPreviewActive = false;
                 _currentBuildingScript.SetUp();
                 DecreaseGold(_currentShopItemScript.itemCost);
                 CheckShopPrices();
+                currentShopItemPrefab.transform.SetParent(buildingParent);
+                _placedBuildingList.Add(currentShopItemPrefab);
                 //currentShopItemPrefab = null;
                 //_currentShopItemScript = null;
                 _actualDistance = 0f;
-
             }
         }
         // Cheats
@@ -156,12 +178,17 @@ public class GameManager : Singleton<GameManager> {
                 _isCamScriptOn = true;
             }
         }
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            DeselectShopItem();
+        }
 
         // As long as we have lives left, continue game.
         if (_livesLeft > 0)
         {
             if (_gameState == GameState.BuildState)
             {
+                
                 _waitTime -= Time.deltaTime;
                 timerText.text = Mathf.Round(_waitTime).ToString();
                 if (_waitTime <= 0)
@@ -190,8 +217,9 @@ public class GameManager : Singleton<GameManager> {
                     }
                     else
                     {
-                        //reset array
-                        activeEnemyList.Clear();
+                        
+                        //Clean up
+                        CleanUpHierarchy();
                         _currentLevel += 1;
                         LoadLevel(_currentLevel);
                         _waitTime = initWaitTime;
@@ -215,7 +243,10 @@ public class GameManager : Singleton<GameManager> {
         _gridScript.CreateGrid();
 
         for (int i = 0; i < activeEnemyList.Count; i++){
-            activeEnemyList[i].StartPath();
+            if (activeEnemyList[i].gameObject.activeInHierarchy)
+            {
+                activeEnemyList[i].StartPath();
+            }
         }
     }
 
@@ -229,6 +260,7 @@ public class GameManager : Singleton<GameManager> {
     }
 
     // for selecting shop item
+    // attach to shop item buttons.
     public void SelectShopItem(ShopItem item)
     {
 
@@ -248,6 +280,12 @@ public class GameManager : Singleton<GameManager> {
         }
         _isItemPreviewActive = true;
 
+    }
+
+    public void DeselectShopItem(){
+        currentShopItemPrefab.SetActive(false);
+        _isItemPreviewActive = false;
+        _inActiveBuildingPreviewObjs.Add(currentShopItemPrefab);
     }
     // What if the enemy reaches its destination? Decrease lives.
     public void EnemyReachedBoat()
@@ -308,14 +346,56 @@ public class GameManager : Singleton<GameManager> {
 
             randomStartPos = new Vector3(enemySpawnLocation.position.x + randX, enemySpawnLocation.position.y, enemySpawnLocation.position.z + randZ);
             obj = Instantiate(_currentLvlScript.enemyPrefab,randomStartPos, _currentLvlScript.enemyPrefab.transform.rotation) as GameObject;
+            obj.transform.SetParent(enemyParent);
+
             enemyScript = obj.GetComponent<Enemy>();
             enemyScript.target = enemyEndPosition;
 
-            Debug.Log(enemyScript);
-            Debug.Log(activeEnemyList);
-
             activeEnemyList.Add(enemyScript);
             _numOfActiveEnemies++;
+        }
+    }
+    /// <summary>
+    /// Clean up the hierarchy of inactive objects
+    /// Called at the start of a build state
+    /// </summary>
+    private void CleanUpHierarchy(){
+        //building
+        GameObject b;
+        //building preview
+        GameObject bp;
+        Enemy e;
+        // Clean up buildings with no health.
+        for (int i = 0; i < _placedBuildingList.Count; i++)
+        {
+            b = _placedBuildingList[i];
+            if(!b.activeInHierarchy)
+            {
+                _placedBuildingList.Remove(b);
+                Destroy(b);
+            }
+        }
+        // Clean up enemies
+        if (activeEnemyList.Count > 0)
+        {
+            for (int i = 0; i < activeEnemyList.Count; i++)
+            {
+                e = activeEnemyList[i];
+                //if (!e.gameObject.activeInHierarchy)
+                //{
+                Destroy(e.gameObject);
+                //}
+            }
+            activeEnemyList.Clear();
+        }
+        // Clean up inactive building preview objects
+        if (_inActiveBuildingPreviewObjs.Count > 0)
+        {
+            for (int i = 0; i < _inActiveBuildingPreviewObjs.Count; i++)
+            {
+                Destroy(_inActiveBuildingPreviewObjs[i]);
+            }
+            _inActiveBuildingPreviewObjs.Clear();
         }
     }
     /// <summary>
@@ -324,7 +404,9 @@ public class GameManager : Singleton<GameManager> {
     private void GameOver(){
         Debug.Log("Game Over");
     }
-
+    /// <summary>
+    /// Called when the player wins the game
+    /// </summary>
     private void WinGame(){
         Debug.Log("You won the game. Victory Screatch!");
     }

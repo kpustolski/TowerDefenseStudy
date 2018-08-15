@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Building : MonoBehaviour{
 
-    [Header("Attributes")]
+    [Header("--Attributes--")][Space(5)]
     public string name;
     public int health = 10;
     //public GameObject prefab;
@@ -23,17 +23,27 @@ public class Building : MonoBehaviour{
     private Renderer _renderer;
 
 
-    [Header("Shooting Bullets")]
+    [Header("--Shooting Bullets--")][Space(5)]
     public float fireRate = 1f;
-    public GameObject bulletPrefab;
+    public Color32 bulletColor = new Color32(255,255,255,255);
+    //public GameObject bulletPrefab;
     // point at where you want to fire bullet
     public Transform firePoint;
     public int enemyLayer = 10;
+    private ObjectPoolScript _buildingPoolScript;
+    private Renderer _bulletRenderer;
+    private GameObject _currentBullet;
+
+    //Object pooling
+    //public int bulletPooledAmount = 10;
+    //public Transform buildingBulletsParent;
+    //private List<GameObject> bulletList;
+
     private int layerMask;
     private float _fireCountdown = 0f;
 
     private Collider[] enemiesInRange;
-    private Bullet _bulletScript;
+    //private Bullet _bulletScript;
     private Vector3 _center;
     public Vector3 Center
     {
@@ -51,14 +61,16 @@ public class Building : MonoBehaviour{
 	{
         layerMask = 1 << enemyLayer;
         _renderer = GetComponent<Renderer>();
+        _buildingPoolScript = GameManager.Instance.buildingBulletPool;
 	}
+
 	private void Update()
 	{
         if (_isPlaced)
         {
             enemiesInRange = Physics.OverlapSphere(Center, rangeRadius, layerMask);
 
-            if (enemiesInRange.Length >= 1)
+            if (enemiesInRange.Length > 0)
             {
                 if (_fireCountdown <= 0f)
                 {
@@ -67,20 +79,21 @@ public class Building : MonoBehaviour{
                 }
                 _fireCountdown -= Time.deltaTime;
             }
+            //else{
+            //    if (_currentBullet != null)
+            //    {
+            //        _currentBullet.SetActive(false);
+            //    }
+            //    //_buildingPoolScript.DeactivateAllObjects();
+            //}
 
             if (health <= 0)
             {
-                Destroy(gameObject);
+                gameObject.SetActive(false);
+                GameManager.Instance.StartMarching();
             }
         }
 
-	}
-	public void OnDestroy()
-	{
-        if (GameManager.Instance.activeEnemyList.Count > 0)
-        {
-            GameManager.Instance.StartMarching();
-        }
 	}
 	public void SetUp(){
         _isPlaced = true;
@@ -98,17 +111,31 @@ public class Building : MonoBehaviour{
 
     }
     private void ShootBullet(){
-        
-        //Debug.Log("Shoot");
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation) as GameObject;
-        _bulletScript = bullet.GetComponent<Bullet>();
-        //_bulletScript.rangeRadius = rangeRadius;
+
+        // grab a bullet from the object pool
+        _currentBullet = _buildingPoolScript.GetPooledObject();
+
+        if (_currentBullet == null) return;
+        // Set position
+        _currentBullet.transform.position = firePoint.position;
+        _currentBullet.transform.rotation = firePoint.rotation;
+        // set color
+        _bulletRenderer = _currentBullet.GetComponent<Renderer>();
+        _bulletRenderer.material.color = bulletColor;
+        _currentBullet.SetActive(true);
+        // FIRE AWAY!
         _fireCountdown = Time.deltaTime + fireRate;
+
+        //Debug.Log("Shoot");
+        //GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation) as GameObject;
+        //_bulletScript = bullet.GetComponent<Bullet>();
+        //_bulletScript.rangeRadius = rangeRadius;
+        //_fireCountdown = Time.deltaTime + fireRate;
     }
 
     private void OnTriggerEnter(Collider col)
 	{
-        Debug.Log("col.tag: " + col.tag);
+        //Debug.Log("col.tag: " + col.tag);
 
         if (!_isPlaced)
         {

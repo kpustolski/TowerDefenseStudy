@@ -15,14 +15,17 @@ public class Bullet : MonoBehaviour {
     private int _randomEnemy;
 
 	// Use this for initialization
-	void Start () {
+	void OnEnable () {
         //chose a random enemy to shoot at
         _enemyArray = GameObject.FindGameObjectsWithTag("Enemy");
+
         if (_enemyArray.Length != 0)
         {
             _randomEnemy = Random.Range(0, _enemyArray.Length);
             _enemyPos = _enemyArray[_randomEnemy].transform;
         }
+
+        _isActive = true;
 	}
 	
 	//// Update is called once per frame
@@ -36,7 +39,8 @@ public class Bullet : MonoBehaviour {
             }
             else
             {
-                Destroy(gameObject);
+                //Destroy(gameObject);
+                gameObject.SetActive(false);
             }
 
         }
@@ -48,12 +52,14 @@ public class Bullet : MonoBehaviour {
            Enemy enemy = other.GetComponent<Enemy>();
             enemy.health -= damage;
             _isActive = false;
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            gameObject.SetActive(false);
         }
         if(other.tag == "Wall" || other.tag == "Floor"){
             //Debug.Log("Hit wall");
             _isActive = false;
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            gameObject.SetActive(false);
         }
 	}
 
